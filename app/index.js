@@ -1,33 +1,54 @@
-import React, { Component } from "react";
-import { AsyncStorage, ActivityIndicator } from "react-native";
+import React, {Component} from 'react';
+import {
+  ActivityIndicator,
+  AsyncStorage,
+} from 'react-native';
+import {Router, Scene} from 'react-native-router-flux';
 
-import { Router, Scene } from "react-native-router-flux";
+import Authentication from './routes/Authentication';
+import HomePage from './routes/HomePage';
 
 class App extends Component {
-  constructor() {
+
+  constructor(){
     super();
-    this.state = { hasToken: false, isLoaded: false };
+    this.state = {
+      hasToken: false,
+      isLoaded: false
+    }
   }
 
-  componentWillMount() {
-    AsyncStorage.getItem("id_token").then(token => {
-      this.setState({ hasToken: token !== null, isLoaded: true });
+  componentDidMount() {
+    AsyncStorage.getItem('id_token').then((token) => {
+      if (token !== null){
+        this.setState({
+          hasToken: true,
+          isLoaded: true
+        });
+      } else{
+        this.setState({
+          hasToken: false,
+          isLoaded: true
+        });
+      }
     });
   }
 
   render() {
-    if (!this.state.isLoaded) {
-      return <ActivityIndicator />;
-    } else {
+    if (!this.state.isLoaded){
       return (
+        <ActivityIndicator />
+      )
+    } else {
+      return(
         <Router>
           <Scene key="root">
             <Scene
               component={Authentication}
               hideNavBar={true}
               initial={!this.state.hasToken}
-              title="Authentication"
               key="Authentication"
+              title="Authentication"
             />
             <Scene
               component={HomePage}
@@ -38,8 +59,9 @@ class App extends Component {
             />
           </Scene>
         </Router>
-      );
+      )
     }
   }
 }
+
 export default App;
